@@ -77,7 +77,7 @@ Define `Function SUTHERLAND_COHEN_CLIP`
     rejection zone.
   + `SWAP`($\mathbf{p}$,$\mathbf{q}$)
   + `EndIf`
-+ `Rem:` $\mathbf{w}_0 \equiv [x_0,y_0]^T$,
++ `Comment:` $\mathbf{w}_0 \equiv [x_0,y_0]^T$,
   $\mathbf{w}_s \equiv [w,h]^T$, $\mathbf{p} \equiv
   [x_p,y_p]^T$,  $\mathbf{q} \equiv [x_q,y_q]^T$
 + `Comment:` Define the x and y differentials
@@ -94,8 +94,60 @@ Define `Function SUTHERLAND_COHEN_CLIP`
   + $y_r\gets y_0 + I[\beta_W(p)=8]\cdot w$
   + $x_r\gets x_p + (\delta_x/\delta_y)\cdot y_r$
   + `EndIf`
-+ `Rem:` $\mathbf{r} \equiv [x_r,y_r]^T$
++ `Comment:` $\mathbf{r} \equiv [x_r,y_r]^T$
 + `Return SUTHERLAND_COHEN_CLIP`
   ($\mathbf{r},\mathbf{q},\mathbf{w}_0,\mathbf{w}_s$)
-
   
+
+### Liang Barsky Algorithm ###
+
+Given
+($\mathbf{p},\mathbf{q},\mathbf{w}_0,\mathbf{w}_s$),
+and Sutherland-Cohen Bitcode operator $\beta_W(\cdot)$,
+corresponding to window
+$W=[\mathbf{w}_0,\mathbf{w}_s]^T$,
+
+Define `Function LIANG_BARSKY_CLIP`
+($\mathbf{p},\mathbf{q},\mathbf{w}_0,\mathbf{w}_s$) :
++ `Comment:` $\mathbf{w}_0 \equiv [x_0,y_0]^T$,
+  $\mathbf{w}_s \equiv [w,h]^T$, $\mathbf{p} \equiv
+  [x_p,y_p]^T$,  $\mathbf{q} \equiv [x_q,y_q]^T$
++ `Comment:` Define the x and y differentials
++ $\delta_{qx}\gets x_q-x_p; \quad \delta_{0x}\gets x_0-x_p$  
++ $\delta_{qy}\gets y_q-y_p; \quad \delta_{0y}\gets y_0-y_p$  
++ `Comment:` Define intersection parameters, $t_i :
+  \mathbf{r}_i=\mathbf{p}+t_i(\mathbf{q}-\mathbf{p})$,
+  corresponding to points of intersection of infinite
+  line $\overline{\mathbf{p}\mathbf{q}}$ with the four
+  bounding planes of the viewing window.
++ $t_0 \gets \delta_{0x}/\delta_{qx}; \quad t_1 \gets t_0 +
+  w/\delta_{qx}$
++ $t_2 \gets \delta_{0y}/\delta_{qy}; \quad t_3 \gets
+  t_2 + h/\delta_{qy}$
++ `Comment:` Order $t_i$ 's along the direction of
+  traversal.
++ `If` $0<\delta_{qx}$ :
+  + `SWAP` ($t_0,t_1$)
+  + `EndIf`
++ `Comment: [Invariant]` $t_0$ is outside to inside and
+  $t_1$ is inside to outside.
++ `If` $0<\delta_{qy}$ :
+  + `SWAP` ($t_2,t_3$)
+  + `EndIf`
++ `Comment: [Invariant]` $t_2$ is outside to inside and
+  $t_3$ is inside to outside.
++ `Comment:` Determine outside to inside in all
+  directions.
++ $u\gets\max(0,t_0,t_2); \quad v\gets\min(1,t_1,t_3)$
++ `If` ($v<u$) :
+  + `Comment:` The line is outside the clipping window.
+  + `Return Signal "Not in window"` 
+  + `EndIf`
++ `Comment:` Compute the points and return.
++ $x_q \gets x_p + v \delta_{qp}; \quad y_q \gets y_p +
+  v \delta_{qp}$
++ $x_p \gets x_p + u \delta_{qp}; \quad y_p \gets y_p +
+  u \delta_{qp}$
++ `Comment:` $\mathbf{p} \equiv [x_p,y_p]^T$,
+  $\mathbf{q} \equiv [x_q,y_q]^T$
++ `Return` $[\mathbf{p},\mathbf{q}]$
