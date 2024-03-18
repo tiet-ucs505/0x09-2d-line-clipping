@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="en" class="h-full w-full">
+  <head>
+    <title>0x09 : 2D Line Clipping</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+  </head>
+  <body class="h-full w-full">
+    <div class="container flex flex-col nowrap gap-2
+                p-8 h-full m-auto">
+      <h1 class="flex-none text-2xl font-bold" >0x09 :
+          2D Line Clipping</h1>
+      <div class="flex-1 flex flex-col gap-1">
+        <h2 class="flex-none text-lg font-bold"
+            >Sutherland Cöhen Clip</h2>
+        <canvas id="canvas-sutherland-cohen"
+                class=" bg-slate-100 w-full h-full"
+                width="8" height="1"></canvas>
+      </div>
+      <div class="flex-1 flex flex-col gap-1">
+        <h2 class="flex-none text-lg font-bold"
+            >Liang Barsky Clip</h2>
+        <canvas id="canvas-liang-barsky"
+                class=" bg-slate-100 w-full h-full"
+                width="8" height="1"></canvas>
+      </div>
+    </div>
+    <script type="text/javascript"
+            src="./canvas-helpers.js"></script>
+    <script type="text/javascript"
+            src="./clip-algo.js"></script>
+    <script type="text/javascript"
+            src="./experiment.js"></script>
+    <script type="text/javascript"
+            src="./main.js"></script>
+    <script type="text/javascript">
+      main()
+    </script>
+  </body>
+</html>
