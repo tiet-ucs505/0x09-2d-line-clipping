@@ -10,7 +10,7 @@
 
 ## Assignment ##
 
-### Step 1 : Sutherland Cohen Bitcodes4 ###
+### Step 1 : Sutherland Cohen Bitcodes ###
 
 Complete the function
 [`ViewWindow.beta`](./clip-algo.js#L15-L42)
