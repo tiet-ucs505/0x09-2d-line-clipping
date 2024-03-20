@@ -1,13 +1,5 @@
 # 0x09 : 2D Line Clipping #
 
-|                  |                                     |
-|------------------|-------------------------------------|
-| Code             | 0x09                                |
-| Submission Opens | Fri 19 Apr 2024 17:00 hrs           |
-| Deadline         | Mon 22 Apr 2024 08:00 hrs           |
-| Weightage        | 2 marks                             |
-| Remark           | 3CS6 to have an extra lab on 19-Apr |
-
 ## Assignment ##
 
 ### Step 1 : Sutherland Cohen Bitcodes ###
