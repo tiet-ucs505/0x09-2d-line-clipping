@@ -31,6 +31,12 @@ so that it computes the end points of the clipped line,
 and returns it; or else returns a symbol
 `ClipBase.NOT_IN_WINDOW` to signal complete rejection.
 
+## Submit ##
+
+1. Git URL
+2. Commit ID
+3. Teaser (Canvas Snapshot)
+
 ## Refresher ##
 
 ### Sutherland Cohen BitCodes ###
