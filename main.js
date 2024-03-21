@@ -1,5 +1,5 @@
 function main() {
-  const experiments = [
+  const lineClipConfigs = [
     {
       sel: "#canvas-sutherland-cohen",
       clip: SutherlandCohenClip,
@@ -10,7 +10,7 @@ function main() {
     },
   ]
 
-  for (const {sel, clip} of experiments) {
-    new Experiment(sel, clip).draw()
+  for (const {sel, clip} of lineClipConfigs) {
+    new LineClipSetup(sel, clip).draw()
   }
 }

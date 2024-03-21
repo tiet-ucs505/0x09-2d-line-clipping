@@ -1,133 +1,123 @@
-class Canvas {
-  sel
-  constructor (sel) {
-    this.sel = sel
-    canvasSetup(sel)
+class Experiment {
+  // Candidate Details
+  static rollNo = '10983743'
+  static name = 'The Tutor'
+}
+
+class BitCode {
+  n
+  constructor(B) {
+    B.forEach((b,i) => {
+      this.n |= b<<i
+    })
   }
-  get canvas() {
-    const canvas = document.querySelector(this.sel)
-    return canvas
-  }
-  get ctx() {
-    return this.canvas.getContext('2d')
-  }
-  get W() {
-    return this.canvas.width
-  }
-  get H() {
-    return this.canvas.height
+  valueOf() {
+    // Allow type-coercion with operations like
+    // new BitCode(B1) | new BitCode(B2)
+    return this.n
   }
 }
 
-class Experiment extends Canvas {
-  clip
-  lines
-
-  constructor(sel, ClipClass, N=10) {
-    super(sel)
-
-    this.clip = new ClipClass(...this.randomViewWindow)
-
-    this.lines = ([...new Array(N).keys()])
-      .map(() => (this.randomLine))
+class ViewWindow {
+  x0				// x_min
+  y0				// y_min
+  w				// width
+  h				// height
+  constructor(x0,y0,w,h) {
+    this.x0 = x0
+    this.y0 = y0
+    this.w = w
+    this.h = h
   }
+  beta (x,y) {
+    const {x0,y0,w,h} = this
 
-  draw() {
-    this.drawViewWindow()
-    for (let [[px,py],[qx,qy]] of this.lines) {
-      this.drawGrayLine([px,py], [qx,qy]);
+    // ------------------------------------------------
+    // FIXME
+    // ------------------------------------------------
+    // Compute the bitcodes of the point (X,Y), with
+    // respect, to a view window, with min coordinates
+    // as (X0,Y0) and size as (W,H)
+    // ------------------------------------------------
 
-      const result
-	= this.clip.getClippedLine ([px,py],[qx,qy])
-
-      if (result !== ClipBase.NOT_IN_WINDOW) {
-	console.log({drawingRedLine:[[px,py],[qx,qy]]})
-	[[px,py],[qx,qy]] = result
-	this.drawRedLine([px,py], [qx,qy]);
-      }
-
-    }
+    return new BitCode([
+      0,			// first bit code
+      0,			// second bit code
+      0,			// third bit code
+      0,			// fourth bit code
+    ])
   }
+}
 
-  drawViewWindow() {
-    const ctx = this.ctx
-    const {x0,y0,w,h} = this.clip.vw
-
-    ctx.save()
-
-    ctx.fillStyle='#f3fede'
-    ctx.fillRect(x0,y0,w,h)
-
-    ctx.lineWidth = 4
-    ctx.strokeStyle='#eecc00'
-    ctx.strokeRect(x0,y0,w,h)
-
-    ctx.restore()
+class ClipBase {
+  static NOT_IN_WINDOW = Symbol('NotInWindow')
+  vw				// view window
+  constructor ( x0,y0,		// window min
+		w,h,		// window size
+	      ) {
+    this.vw = new ViewWindow(x0,y0,w,h)
   }
+  getClippedLine(
+    [px,py],			// line start point
+    [qx,qy],			// line end point
+  ) {
+    // Not Implmented here
+    throw Error({implemented: false})
+  }  
+}
 
-  drawGrayLine([px,py], [qx,qy]) {
-    const ctx = this.ctx
-    ctx.save()
+class SutherlandCohenClip extends ClipBase {
+  getClippedLine(
+    [px,py],			// line start point
+    [qx,qy],			// line end point
+  ) {
+    const bp = this.vw.beta(px,py)
+    const bq = this.vw.beta(qx,qy)
+    const {x0,y0,w,h} = this.vw
 
-    ctx.lineWidth = 2
-    ctx.strokeStyle='#cccccc'
-    ctx.beginPath()
-    ctx.moveTo(px,py)
-    ctx.lineTo(qx,qy)
-    ctx.stroke()
+    // ------------------------------------------------
+    // FIXME
+    // ------------------------------------------------
+    // Given PX,PY, QX,QY as their input and having
+    // computed their corresponding bit-codes as BP,
+    // BQ, compute and return the clipped line
+    // [[PX,PY], [QX,QY]] inside the window, or
+    // ClipBase.NOT_IN_WINDOW if completely outside.
+    // ------------------------------------------------
 
-    ctx.fillStyle='#888822'
-    ctx.beginPath()
-    ctx.arc(px,py,2.5,0,6.28318530718)
-    ctx.arc(qx,qy,2.5,0,6.28318530718)
-    ctx.fill()
+    return ClipBase.NOT_IN_WINDOW
 
-    ctx.restore()
-  }
-
-  drawRedLine([px,py], [qx,qy]) {
-    const ctx = this.ctx
-    ctx.save()
-
-    ctx.lineWidth = 2
-    ctx.strokeStyle='#de4500'
-    ctx.beginPath()
-    ctx.moveTo(px,py)
-    ctx.lineTo(qx,qy)
-    ctx.stroke()
-
-    ctx.fillStyle='#884422'
-    ctx.beginPath()
-    ctx.arc(px,py,2,0,6.28318530718)
-    ctx.arc(qx,qy,2,0,6.28318530718)
-    ctx.fill()
-
-    ctx.restore()
-  }
-
-  get randomViewWindow() {
-    const _f = 0.25
-    const {H,W} = this
-    const x0 = Math.floor(Math.random() * W*0.5)
-    , y0 = Math.floor(Math.random() * H*0.5)
-    , w = Math.floor((W-x0)*_f + Math.random() * (W-x0)*(1-_f))
-    , h = Math.floor((H-y0)*_f + Math.random() * (H-y0)*(1-_f))
-    return [x0, y0, w, h]
-  }
-
-  get randomLine() {
-    const {H,W} = this
-    return [
-      [Math.floor(Math.random() * W),
-       Math.floor(Math.random() * H)],
-      [Math.floor(Math.random() * W),
-       Math.floor(Math.random() * H)],
-    ]
     // return [
-    //   [Math.floor(Math.random() * W*0.5),
-    //    Math.floor(Math.random() * H*0.5)],
-    //   [Math.floor(0.5*W + Math.random() * W*0.5),
-    //    Math.floor(0.5*H + Math.random() * H*0.5)],
+    //   [px,py],			// line start point
+    //   [qx,qy],			// line end point
     // ]
-  }
+  }  
+}
+
+class LiangBarskyClip extends ClipBase {
+  getClippedLine(
+    [px,py],			// line start point
+    [qx,qy],			// line end point
+  ) {
+    const bp = this.vw.beta(px,py)
+    const bq = this.vw.beta(qx,qy)
+    const {x0,y0,w,h} = this.vw
+
+    // ------------------------------------------------
+    // FIXME
+    // ------------------------------------------------
+    // Given PX,PY, QX,QY as their input and having
+    // computed their corresponding bit-codes as BP,
+    // BQ, compute and return the clipped line
+    // [[PX,PY], [QX,QY]] inside the window, or
+    // ClipBase.NOT_IN_WINDOW if completely outside.
+    // ------------------------------------------------
+
+    return ClipBase.NOT_IN_WINDOW
+
+    // return [
+    //   [px,py],			// line start point
+    //   [qx,qy],			// line end point
+    // ]
+  }  
 }

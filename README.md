@@ -5,7 +5,7 @@
 ### Step 1 : Sutherland Cohen Bitcodes ###
 
 Complete the function
-[`ViewWindow.beta`](./clip-algo.js#L15-L42)
+[`ViewWindow.beta`](./experiment.js#L15-L42)
 
 Compute the bitcodes of the point `(x,y)`, with respect,
 to a view window, with min coordinates as `(x0,y0)`
@@ -15,7 +15,7 @@ and size as `(w,h)`
 
 Given line end points as `[px,py]` and `[qx,qy]`,
 complete the function
-[`SutherlandCohenClip.getClippedLine`](./clip-algo.js#L63-L88)
+[`SutherlandCohenClip.getClippedLine`](./experiment.js#L63-L88)
 so that it computes the end points of the clipped line,
 and returns it; or else returns a symbol
 `ClipBase.NOT_IN_WINDOW` to signal complete rejection.
@@ -24,7 +24,7 @@ and returns it; or else returns a symbol
 
 Given line end points as `[px,py]` and `[qx,qy]`,
 complete the function
-[`LiangBarskyClip.getClippedLine`](./clip-algo.js#L92-L116)
+[`LiangBarskyClip.getClippedLine`](./experiment.js#L92-L116)
 so that it computes the end points of the clipped line,
 and returns it; or else returns a symbol
 `ClipBase.NOT_IN_WINDOW` to signal complete rejection.
