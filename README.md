@@ -1,5 +1,7 @@
 # 0x09 : 2D Line Clipping #
 
+![](./assets/teaser.png)
+
 ## Assignment ##
 
 ### Step 1 : Sutherland Cohen Bitcodes ###
