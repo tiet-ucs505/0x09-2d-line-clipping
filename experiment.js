@@ -29,6 +29,7 @@ class ViewWindow {
     this.w = w
     this.h = h
   }
+
   beta (x,y) {
     const {x0,y0,w,h} = this
 
@@ -41,10 +42,10 @@ class ViewWindow {
     // ------------------------------------------------
 
     return new BitCode([
-      0,			// first bit code
-      0,			// second bit code
-      0,			// third bit code
-      0,			// fourth bit code
+      (x < x0),			// first bit code
+      (x0+w < x),			// second bit code
+      (y < y0),			// third bit code
+      (y0+h < y),			// fourth bit code
     ])
   }
 }
@@ -71,8 +72,10 @@ class SutherlandCohenClip extends ClipBase {
     [px,py],			// line start point
     [qx,qy],			// line end point
   ) {
-    const bp = this.vw.beta(px,py)
-    const bq = this.vw.beta(qx,qy)
+    let dx,dy, rx,ry, bq,bp
+
+    bp = Number(this.vw.beta(px,py))
+    bq = Number(this.vw.beta(qx,qy))
     const {x0,y0,w,h} = this.vw
 
     // ------------------------------------------------
@@ -84,8 +87,36 @@ class SutherlandCohenClip extends ClipBase {
     // [[PX,PY], [QX,QY]] inside the window, or
     // ClipBase.NOT_IN_WINDOW if completely outside.
     // ------------------------------------------------
+    console.log({p:[px,py,bp],
+		 q:[qx,qy,bq],
+		 w:[x0,y0,x0+w,y0+h]})
 
-    return ClipBase.NOT_IN_WINDOW
+    if (bp == 0 && bq == 0) {
+      console.log({trivialAccept: true})
+      return [[px,py], [qx,qy]];
+    }
+    if ((bp&bq)) return ClipBase.NOT_IN_WINDOW;
+    if (bp == 0) {
+      // swap
+      console.log({swapping: true});
+      [px,py,bp, qx,qy,bq] = [qx,qy,bq, px,py,bp];
+      console.log({p:[px,py,bp],
+		   q:[qx,qy,bq],
+		   w:[x0,y0,x0+w,y0+h]})
+    }
+
+    [dx, dy] = [qx-px, qy-py]
+    if (bp < 4) {
+      rx = x0 + ((bp&2) ? w : 0)
+      ry = py + (dy/dx)*(rx-px)
+    }
+
+    else {
+      ry = y0 + ((bp&8) ? h : 0)
+      rx = px + (dx/dy)*(ry-py)
+    }
+
+    return this.getClippedLine([rx,ry], [qx,qy]) 
 
     // return [
     //   [px,py],			// line start point
@@ -99,9 +130,11 @@ class LiangBarskyClip extends ClipBase {
     [px,py],			// line start point
     [qx,qy],			// line end point
   ) {
+    let dqx,d0x,dqy,d0y, t0,t1,t2,t3, u,v
+
     const bp = this.vw.beta(px,py)
     const bq = this.vw.beta(qx,qy)
-    const {x0,y0,w,h} = this.vw
+    const {x0,y0,w,h} = this.vw;
 
     // ------------------------------------------------
     // FIXME
@@ -113,7 +146,32 @@ class LiangBarskyClip extends ClipBase {
     // ClipBase.NOT_IN_WINDOW if completely outside.
     // ------------------------------------------------
 
-    return ClipBase.NOT_IN_WINDOW
+    [dqx, d0x] = [qx-px, x0-px];
+    [dqy, d0y] = [qy-py, y0-py];
+
+    t0 = d0x/dqx
+    t1 = t0+w/dqx
+    t2 = d0y/dqy
+    t3 = t1+h/dqy
+
+    console.log({t0,t1,t2,t3, dqx,d0x,dqy,d0y})
+
+    if (dqx<0) { [t0,t1]=[t1,t0] }
+    if (dqy<0) { [t2,t3]=[t3,t2] }
+
+    console.log({t0,t1,t2,t3, dqx,d0x,dqy,d0y});
+
+    [u,v] = [Math.max(0,t0,t2), Math.min(1,t1,t3)]
+
+    console.log({v,u})
+
+    if (v<u) 
+      return ClipBase.NOT_IN_WINDOW
+
+    return [
+      [px+u*dqx,py+u*dqy],
+      [px+v*dqx,py+v*dqy],
+    ]
 
     // return [
     //   [px,py],			// line start point
