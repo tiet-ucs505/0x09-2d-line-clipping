@@ -39,12 +39,12 @@ class ViewWindow {
     // respect, to a view window, with min coordinates
     // as (X0,Y0) and size as (W,H)
     // ------------------------------------------------
-
+    
     return new BitCode([
-      0,			// first bit code
-      0,			// second bit code
-      0,			// third bit code
-      0,			// fourth bit code
+      x < x0,			// first bit code
+      (x0+w) < x,		// second bit code
+      y < y0,			// third bit code
+      (y0+h) < y,		// fourth bit code
     ])
   }
 }
@@ -71,8 +71,11 @@ class SutherlandCohenClip extends ClipBase {
     [px,py],			// line start point
     [qx,qy],			// line end point
   ) {
-    const bp = this.vw.beta(px,py)
-    const bq = this.vw.beta(qx,qy)
+    let dx,dy, rx,ry, bq,bp
+
+    bp = this.vw.beta(px,py)
+    bq = this.vw.beta(qx,qy)
+
     const {x0,y0,w,h} = this.vw
 
     // ------------------------------------------------
@@ -85,13 +88,56 @@ class SutherlandCohenClip extends ClipBase {
     // ClipBase.NOT_IN_WINDOW if completely outside.
     // ------------------------------------------------
 
-    return ClipBase.NOT_IN_WINDOW
+    console.log({bp, bq})
 
-    // return [
-    //   [px,py],			// line start point
-    //   [qx,qy],			// line end point
-    // ]
-  }  
+    if (bp == 0 && bq==0) {
+      // trivial accept
+      console.log({trivialAccept: true,
+		   p: [px,py],
+		   q: [qx,qy],})
+      return [
+	[px,py],			// line start point
+	[qx,qy],			// line end point
+      ]
+    }
+
+    if ((bp&bq) != 0) {
+      // trivial reject
+      console.log({trivialReject: true})
+      return ClipBase.NOT_IN_WINDOW
+    }
+
+    if (bp == 0) {
+      // swap p,q & bp,bq
+      console.log({
+	p:[px,py],
+	q:[qx,qy],});
+      [px,py,qx,qy,bp,bq] = [qx,qy,px,py,bq,bp]
+      console.log({swapping: true,
+		   p:[px,py],
+		   q:[qx,qy],})
+    }
+
+    dx = qx-px
+    dy = qy-py
+
+    if (bp < 4) {
+      rx = x0 + ((bp&2) ? w : 0)
+      ry = py + (dy/dx)*(rx-px)
+    }
+
+    else {
+      ry = y0 + ((bp&8) ? h : 0)
+      rx = px + (dx/dy)*(ry-py)
+    }
+
+    console.log({rx,ry,px,py,qx,qy,x0,y0,w,h,bp,bq})
+
+    return this.getClippedLine(
+      [rx,ry],			// line start point
+      [qx,qy],			// line end point
+    )
+  }
 }
 
 class LiangBarskyClip extends ClipBase {

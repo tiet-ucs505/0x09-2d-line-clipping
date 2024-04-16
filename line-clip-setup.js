@@ -41,7 +41,7 @@ class LineClipSetup extends Canvas {
 	= this.clip.getClippedLine ([px,py],[qx,qy])
 
       if (result !== ClipBase.NOT_IN_WINDOW) {
-	console.log({drawingRedLine:[[px,py],[qx,qy]]})
+	console.log({drawingRedLine:[[px,py],[qx,qy]]});
 	[[px,py],[qx,qy]] = result
 	this.drawRedLine([px,py], [qx,qy]);
       }
